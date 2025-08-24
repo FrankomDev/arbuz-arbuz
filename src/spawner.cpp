@@ -5,6 +5,7 @@
 #include "fruit.h"
 #include <raylib.h>
 #include "spawner.h"
+#include <list>
 #include <vector>
 #include <box2d/box2d.h>
 
@@ -12,9 +13,15 @@ Texture2D spawner_texture;
 float spawner_radius;
 int type;
 Vector2 mouse;
-std::vector<Fruit> fruits;
+std::list<Fruit> fruits;
 bool clicked = false;
 int click_frames = 0;
+struct pending {
+    b2Vec2 pos;
+    float radius;
+    Texture2D texture;
+};
+std::vector<pending> pfruits;
 
 void random_fruit() {
     const int num = GetRandomValue(1,4);
@@ -57,8 +64,10 @@ void spawner_draw() {
 
 void spawn(b2WorldId world_id) {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !clicked) {
-        Fruit fruit = Fruit(world_id, (b2Vec2){mouse.x, 5.0f}, spawner_radius, spawner_texture);
-        fruits.push_back(fruit);
+        //Fruit fruit = Fruit(world_id, (b2Vec2){mouse.x, 5.0f}, spawner_radius, spawner_texture);
+        //fruits.push_back(fruit);
+        fruits.emplace_back(world_id, (b2Vec2){mouse.x, 5.0f}, spawner_radius, spawner_texture);
+        //pfruits.push_back({(b2Vec2){mouse.x, 5.0f}, spawner_radius, spawner_texture});
         clicked = true;
         random_fruit();
     }else if (clicked) {
@@ -68,57 +77,68 @@ void spawn(b2WorldId world_id) {
             clicked = false;
         }
     }
+
 }
 
-void change_fruit(float radius, b2Vec2 pos, b2WorldId world_id) {
+void change_fruit(float radius, b2Vec2 pos) {
     switch ((int) radius) {
         case 24:
             //change to peach
-            fruits.emplace_back(world_id, pos, Peach::radius, Peach::texture);
+            //pfruits.emplace_back(world_id, pos, Peach::radius, Peach::texture);
+            pfruits.push_back({pos, Peach::radius, Peach::texture});
             break;
         case 30:
             //change to apple
-            fruits.emplace_back(world_id, pos, Apple::radius, Apple::texture);
+            //pfruits.emplace_back(world_id, pos, Apple::radius, Apple::texture);
+            pfruits.push_back({pos, Apple::radius, Apple::texture});
             break;
         case 36:
             //change to blackberry
-            fruits.emplace_back(world_id, pos, Blackberry::radius, Blackberry::texture);
+            //pfruits.emplace_back(world_id, pos, Blackberry::radius, Blackberry::texture);
+            pfruits.push_back({pos, Blackberry::radius, Blackberry::texture});
             break;
         case 42:
             //change to lime
-            fruits.emplace_back(world_id, pos, Lime::radius, Lime::texture);
+            //pfruits.emplace_back(world_id, pos, Lime::radius, Lime::texture);
+            pfruits.push_back({pos, Lime::radius, Lime::texture});
             break;
         case 48:
             //change to lemon
-            fruits.emplace_back(world_id, pos, Lemon::radius, Lemon::texture);
+            //pfruits.emplace_back(world_id, pos, Lemon::radius, Lemon::texture);
+            pfruits.push_back({pos, Lemon::radius, Lemon::texture});
             break;
         case 54:
             //change to plum
-            fruits.emplace_back(world_id, pos, Plum::radius, Plum::texture);
+            //pfruits.emplace_back(world_id, pos, Plum::radius, Plum::texture);
+            pfruits.push_back({pos, Plum::radius, Plum::texture});
             break;
         case 60:
             //change to strawberry
-            fruits.emplace_back(world_id, pos, Strawberry::radius, Strawberry::texture);
+            //pfruits.emplace_back(world_id, pos, Strawberry::radius, Strawberry::texture);
+            pfruits.push_back({pos, Strawberry::radius, Strawberry::texture});
             break;
         case 66:
             //change to coconut
-            fruits.emplace_back(world_id, pos, Coconut::radius, Coconut::texture);
+            //pfruits.emplace_back(world_id, pos, Coconut::radius, Coconut::texture);
+            pfruits.push_back({pos, Coconut::radius, Coconut::texture});
             break;
         case 72:
             //change to starfruit
-            fruits.emplace_back(world_id, pos, Starfruit::radius, Starfruit::texture);
+            //pfruits.emplace_back(world_id, pos, Starfruit::radius, Starfruit::texture);
+            pfruits.push_back({pos, Starfruit::radius, Starfruit::texture});
             break;
         case 78:
             //change to watermelon
-            fruits.emplace_back(world_id, pos, Watermelon::radius, Watermelon::texture);
+            //pfruits.emplace_back(world_id, pos, Watermelon::radius, Watermelon::texture);
+            pfruits.push_back({pos, Watermelon::radius, Watermelon::texture});
             break;
     }
 }
 
-void check_if_equal(std::vector<Fruit*> fruits_l, b2WorldId world_id) {
-    float get_radius = fruits_l[1]->radius;
-    b2Vec2 get_pos = fruits_l[1]->get_position();
+/*void check_if_equal(std::vector<Fruit*> fruits_l, b2WorldId world_id) {
     if (fruits_l[0]->radius == fruits_l[1]->radius) {
+        float get_radius = fruits_l[1]->radius;
+        b2Vec2 get_pos = fruits_l[1]->get_position();
         // [0] ten co spada [1] ten na dole wiec go zmieniac
         auto i = fruits.begin();
         for (Fruit &fruit : fruits) {
@@ -138,7 +158,8 @@ void check_if_equal(std::vector<Fruit*> fruits_l, b2WorldId world_id) {
         }
        change_fruit(get_radius, get_pos, world_id);
     }
-}
+}*/
+
 
 void collision_detection(b2WorldId world_id) {
     b2ContactEvents contacts = b2World_GetContactEvents(world_id);
@@ -158,7 +179,20 @@ void collision_detection(b2WorldId world_id) {
                         if (fruit.shape_id.index1 == events.shapeIdA.index1||fruit.shape_id.index1 == events.shapeIdB.index1) {
                             fruits_vec.push_back(&fruit);
                             if (fruits_vec.size()==2) {
-                                check_if_equal(fruits_vec, world_id);
+                                //check_if_equal(fruits_vec, world_id);
+                                if (fruits_vec[1]->radius == fruits_vec[0]->radius) {
+                                    b2Vec2 get_pos = fruits_vec[1]->get_position();
+                                    float get_radius = fruits_vec[1]->radius;
+                                    b2DestroyBody(fruits_vec[1]->body_id);
+                                    b2DestroyBody(fruits_vec[0]->body_id);
+                                    fruits.remove_if([&](const Fruit& f) {
+                                        return &f == fruits_vec[1];
+                                    });
+                                    fruits.remove_if([&](const Fruit& f) {
+                                        return &f == fruits_vec[0];
+                                    });
+                                    change_fruit(get_radius, get_pos);
+                                }
                                 fruits_vec.clear();
                                 break;
                             }
@@ -167,5 +201,11 @@ void collision_detection(b2WorldId world_id) {
                 }
             }
         }
+    }
+    if (!pfruits.empty()) {
+        for (auto& fruit : pfruits) {
+            fruits.emplace_back(world_id, fruit.pos, fruit.radius, fruit.texture);
+        }
+        pfruits.clear();
     }
 }

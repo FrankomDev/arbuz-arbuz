@@ -4,13 +4,12 @@
 
 #ifndef SPAWNER_H
 #define SPAWNER_H
-//#include <raylib.h>
 #include <box2d/box2d.h>
-#include <vector>
+#include <list>
 
 //extern Texture2D spawner_texture;
 //extern float spawner_radius;
-extern std::vector<Fruit> fruits;
+extern std::list<Fruit> fruits;
 
 void random_fruit();
 void spawner_draw();
