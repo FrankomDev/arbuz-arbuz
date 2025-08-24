@@ -56,6 +56,7 @@ void spawner_draw() {
         if (mouse.x < 60) mouse.x = 60;
         if (mouse.x > 540) mouse.x = 540;
 
+        DrawLine(mouse.x, 10, mouse.x, 700, BLACK);
         Rectangle src = {0,0,(float)spawner_texture.width,(float)spawner_texture.height};
         Rectangle dst = {mouse.x, 28.0f, spawner_radius*2, spawner_radius*2};
         DrawTexturePro(spawner_texture, src, dst, {spawner_radius,spawner_radius}, 0.0f, WHITE);
@@ -135,32 +136,6 @@ void change_fruit(float radius, b2Vec2 pos) {
     }
 }
 
-/*void check_if_equal(std::vector<Fruit*> fruits_l, b2WorldId world_id) {
-    if (fruits_l[0]->radius == fruits_l[1]->radius) {
-        float get_radius = fruits_l[1]->radius;
-        b2Vec2 get_pos = fruits_l[1]->get_position();
-        // [0] ten co spada [1] ten na dole wiec go zmieniac
-        auto i = fruits.begin();
-        for (Fruit &fruit : fruits) {
-            if (fruit.body_id.index1 == fruits_l[1]->body_id.index1) {
-                if (b2Body_IsValid(fruits_l[1]->body_id)) {
-                    b2DestroyBody(fruits_l[1]->body_id);
-                    fruits.erase(i);
-                }
-                ++i;
-            }else if (fruit.body_id.index1 == fruits_l[0]->body_id.index1) {
-                if (b2Body_IsValid(fruits_l[0]->body_id)) {
-                    b2DestroyBody(fruits_l[0]->body_id);
-                    fruits.erase(i);
-                }
-                ++i;
-            }else ++i;
-        }
-       change_fruit(get_radius, get_pos, world_id);
-    }
-}*/
-
-
 void collision_detection(b2WorldId world_id) {
     b2ContactEvents contacts = b2World_GetContactEvents(world_id);
     //std::cout << "hit: " << contacts.hitCount << " begin: " << contacts.beginCount << " end: " << contacts.endCount << std::endl;
@@ -186,10 +161,7 @@ void collision_detection(b2WorldId world_id) {
                                     b2DestroyBody(fruits_vec[1]->body_id);
                                     b2DestroyBody(fruits_vec[0]->body_id);
                                     fruits.remove_if([&](const Fruit& f) {
-                                        return &f == fruits_vec[1];
-                                    });
-                                    fruits.remove_if([&](const Fruit& f) {
-                                        return &f == fruits_vec[0];
+                                        return &f == fruits_vec[1] || &f == fruits_vec[0];
                                     });
                                     change_fruit(get_radius, get_pos);
                                 }

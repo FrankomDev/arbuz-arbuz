@@ -5,9 +5,14 @@ I know I could make it faster using engine like godot but it wouldn't be fun
 <br>
 [assets](https://gamedeveloperstudio.itch.io/fruits-icon-pack)
 
-### building:
+### Building:
 You'll need Raylib and Box2D in your system <br>
-``mkdir build`` <br>
-``cd build`` <br>
-``cmake ..`` <br>
-``make``
+```shell
+mkdir build
+cd build
+cmake ..
+make
+```
+### Todo:
+Need to figure out why is this crashing <br>
+Line which fruits can't pass
