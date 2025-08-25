@@ -16,3 +16,5 @@ make
 ### Todo:
 Need to figure out why is this crashing <br>
 Line which fruits can't pass
+<br>
+![gif](https://github.com/FrankomDev/arbuz-arbuz/blob/main/gif.gif)
