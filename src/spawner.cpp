@@ -79,6 +79,12 @@ void spawn(b2WorldId world_id) {
         }
     }
 
+    if (!pfruits.empty()) {
+        for (auto& fruit : pfruits) {
+            fruits.emplace_back(world_id, fruit.pos, fruit.radius, fruit.texture);
+        }
+        pfruits.clear();
+    }
 }
 
 void change_fruit(float radius, b2Vec2 pos) {
@@ -140,6 +146,7 @@ void collision_detection(b2WorldId world_id) {
     b2ContactEvents contacts = b2World_GetContactEvents(world_id);
     //std::cout << "hit: " << contacts.hitCount << " begin: " << contacts.beginCount << " end: " << contacts.endCount << std::endl;
     if (!fruits.empty()) {
+        std::vector<b2BodyId> to_destroy;
         std::vector<Fruit*> fruits_vec;
         for (int i =0; i < contacts.hitCount; i++ ) {
             b2ContactHitEvent &events = contacts.hitEvents[i];
@@ -151,15 +158,18 @@ void collision_detection(b2WorldId world_id) {
                 for (Fruit& fruit : fruits) {
                     //if (fruit.body_id.index1 == bodyA.index1||fruit.body_id.index1 == bodyB.index1) {
                     if (b2Body_IsValid(fruit.body_id) && b2Shape_IsValid(fruit.shape_id)){
-                        if (fruit.shape_id.index1 == events.shapeIdA.index1||fruit.shape_id.index1 == events.shapeIdB.index1) {
+                        if (fruit.shape_id.index1 == events.shapeIdA.index1 && fruit.shape_id.generation == events.shapeIdA.generation
+                            ||fruit.shape_id.index1 == events.shapeIdB.index1 && fruit.shape_id.generation == events.shapeIdB.generation) {
                             fruits_vec.push_back(&fruit);
                             if (fruits_vec.size()==2) {
                                 //check_if_equal(fruits_vec, world_id);
                                 if (fruits_vec[1]->radius == fruits_vec[0]->radius) {
                                     b2Vec2 get_pos = fruits_vec[1]->get_position();
                                     float get_radius = fruits_vec[1]->radius;
-                                    b2DestroyBody(fruits_vec[1]->body_id);
-                                    b2DestroyBody(fruits_vec[0]->body_id);
+                                    //b2DestroyBody(fruits_vec[1]->body_id);
+                                    //b2DestroyBody(fruits_vec[0]->body_id);
+                                    to_destroy.push_back(fruits_vec[1]->body_id);
+                                    to_destroy.push_back(fruits_vec[0]->body_id);
                                     fruits.remove_if([&](const Fruit& f) {
                                         return &f == fruits_vec[1] || &f == fruits_vec[0];
                                     });
@@ -173,11 +183,10 @@ void collision_detection(b2WorldId world_id) {
                 }
             }
         }
-    }
-    if (!pfruits.empty()) {
-        for (auto& fruit : pfruits) {
-            fruits.emplace_back(world_id, fruit.pos, fruit.radius, fruit.texture);
+        if (!to_destroy.empty()) {
+            for (auto& body : to_destroy) {
+                b2DestroyBody(body);
+            }
         }
-        pfruits.clear();
     }
 }
