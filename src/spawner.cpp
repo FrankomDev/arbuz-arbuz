@@ -2,10 +2,9 @@
 // Created by frankom on 23.08.25.
 //
 
-#include "fruit.h"
+#include "../include/fruit.h"
 #include <raylib.h>
-#include "spawner.h"
-#include <list>
+#include "../include/spawner.h"
 #include <vector>
 #include <box2d/box2d.h>
 

@@ -6,6 +6,7 @@
 #define SPAWNER_H
 #include <box2d/box2d.h>
 #include <list>
+#include "../include/fruit.h"
 
 //extern Texture2D spawner_texture;
 //extern float spawner_radius;

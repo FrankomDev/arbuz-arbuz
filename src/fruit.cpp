@@ -2,7 +2,7 @@
 // Created by frankom on 22.08.25.
 //
 
-#include "fruit.h"
+#include "../include/fruit.h"
 #include <box2d/box2d.h>
 
 Fruit::Fruit(b2WorldId world_id, b2Vec2 position, float radius, Texture2D texture):

@@ -22,7 +22,8 @@ public:
         DrawTexturePro(texture, src, dst, {radius,radius}, get_angle(), WHITE);
     }
     b2Vec2 get_position() {
-        return b2Body_GetPosition(body_id);
+        if (b2Body_IsValid(body_id)) return b2Body_GetPosition(body_id);
+        return {0,0};
     }
     float get_angle() {
         return RAD2DEG * b2Rot_GetAngle(b2Body_GetRotation(body_id));
