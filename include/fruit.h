@@ -26,7 +26,8 @@ public:
         return {0,0};
     }
     float get_angle() {
-        return RAD2DEG * b2Rot_GetAngle(b2Body_GetRotation(body_id));
+        if (b2Body_IsValid(body_id)) return RAD2DEG * b2Rot_GetAngle(b2Body_GetRotation(body_id));
+        return 0.0f;        
     }
     Fruit(b2WorldId world_id, b2Vec2 position, float radius, Texture2D texture);
 };
