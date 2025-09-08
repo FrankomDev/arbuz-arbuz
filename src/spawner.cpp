@@ -184,7 +184,7 @@ void collision_detection(b2WorldId world_id) {
         }
         if (!to_destroy.empty()) {
             for (auto& body : to_destroy) {
-                b2DestroyBody(body);
+                if (b2Body_IsValid(body)) b2DestroyBody(body);
             }
         }
     }

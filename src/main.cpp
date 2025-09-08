@@ -84,7 +84,7 @@ int main() {
             }
             if (!to_destroy.empty()){
                 for (auto &it : to_destroy){
-                    dead_fruits.erase(std::remove_if(dead_fruits.begin(), dead_fruits.end(), [&it](const fruit_on_line &f){
+                    if (b2Body_IsValid(it.fruit.body_id)) dead_fruits.erase(std::remove_if(dead_fruits.begin(), dead_fruits.end(), [&it](const fruit_on_line &f){
                         return f.fruit.body_id.index1 == it.fruit.body_id.index1;
                     }));
                 }
