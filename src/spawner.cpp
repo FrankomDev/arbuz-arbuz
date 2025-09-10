@@ -3,6 +3,7 @@
 //
 
 #include "../include/fruit.h"
+#include <box2d/types.h>
 #include <raylib.h>
 #include "../include/spawner.h"
 #include <vector>
@@ -147,8 +148,8 @@ void collision_detection(b2WorldId world_id) {
     if (!fruits.empty()) {
         std::vector<b2BodyId> to_destroy;
         std::vector<Fruit*> fruits_vec;
-        for (int i =0; i < contacts.hitCount; i++ ) {
-            b2ContactHitEvent &events = contacts.hitEvents[i];
+        for (int i =0; i < contacts.beginCount; i++ ) {
+            b2ContactBeginTouchEvent &events = contacts.beginEvents[i];
             b2BodyId bodyA = b2Shape_GetBody(events.shapeIdA);
             b2BodyId bodyB = b2Shape_GetBody(events.shapeIdB);
             if (b2Body_IsValid(bodyA) && b2Body_IsValid(bodyB) &&
