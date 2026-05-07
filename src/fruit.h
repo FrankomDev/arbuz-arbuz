@@ -1,3 +1,5 @@
+#pragma once
+
 #include <box2d/id.h>
 #include <raylib.h>
 #include <unordered_map>
@@ -6,6 +8,8 @@
 #define START_X 20
 #define END_X 600 - START_X
 extern b2WorldId world_id;
+
+inline bool end = false;
 
 typedef enum { Apple, Blueberry, Lemon, Grape, Orange, GreenApple, Peach, Coconut, DragonFruit, Pineapple, Watermelon } FruitType;
 
@@ -34,3 +38,4 @@ void handle_collisions();
 
 
 void detect_fruits_on_endline();
+void restart_game();

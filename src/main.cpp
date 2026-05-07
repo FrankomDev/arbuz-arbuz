@@ -48,53 +48,68 @@ int main() {
     } RandomFruit;
 
     while (!WindowShouldClose()) {
-        b2World_Step(world_id, GetFrameTime(), 4);
-        Vector2 mouse = GetMousePosition();
+        if (!end) {
+            b2World_Step(world_id, GetFrameTime(), 4);
+            Vector2 mouse = GetMousePosition();
 
-        if (RandomFruit.disabled) {
-            RandomFruit.disabled_timer += GetFrameTime();
-            if (RandomFruit.disabled_timer >= 1.0f) {
-                RandomFruit.type = select_random_fruit();
-                RandomFruit.disabled_timer = 0;
-                RandomFruit.disabled = false;
+            if (RandomFruit.disabled) {
+                RandomFruit.disabled_timer += GetFrameTime();
+                if (RandomFruit.disabled_timer >= 1.0f) {
+                    RandomFruit.type = select_random_fruit();
+                    RandomFruit.disabled_timer = 0;
+                    RandomFruit.disabled = false;
+                }
             }
+
+            FruitTemplate random_fruit_data = fruit_db[RandomFruit.type];
+            RandomFruit.position.x = mouse.x;
+
+            float min = 20+random_fruit_data.radius+5;
+            float max = END_X-5-random_fruit_data.radius;
+            if (RandomFruit.position.x < min)
+                RandomFruit.position.x = min;
+            else if (RandomFruit.position.x > max)
+                RandomFruit.position.x = max;
+
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !RandomFruit.disabled) {
+                spawn_fruit(RandomFruit.position, RandomFruit.type);
+                RandomFruit.disabled = true;
+            }
+
+            handle_collisions();
+
+            detect_fruits_on_endline();
+
+            BeginDrawing();
+            ClearBackground(GRAY);
+            if (!RandomFruit.disabled)
+                DrawCircleV(RandomFruit.position, random_fruit_data.radius, random_fruit_data.color);
+
+            DrawRectangle(START_X, 120, END_X-START_X, 5, RED);             // end line
+            DrawRectangle(START_X, 20, 5, 755, BLACK);                      // wall 1
+            DrawRectangle(END_X-5, 20, 5, 755, BLACK);                      // wall 2
+            DrawRectangle(START_X, 755+START_X, END_X-START_X, 5, BLACK);   // ground
+
+            for (Fruit &f : fruits) {
+                f.draw();
+            }
+
+            EndDrawing();
+        } else {
+
+            if (IsKeyPressed(KEY_ENTER))
+                restart_game();
+            BeginDrawing();
+            ClearBackground(GRAY);
+            const char* text = "Game Over!";
+            int width = MeasureText(text, 50);
+            DrawText(text, GetScreenWidth()/2-width/2, 250, 50, RED);
+
+            text = "ENTER to restart";
+            width = MeasureText(text, 40);
+            DrawText("ENTER to restart", GetScreenWidth()/2-width/2, 500, 40, RED);
+            EndDrawing();
         }
-
-        FruitTemplate random_fruit_data = fruit_db[RandomFruit.type];
-        RandomFruit.position.x = mouse.x;
-
-        float min = 20+random_fruit_data.radius+5;
-        float max = END_X-5-random_fruit_data.radius;
-        if (RandomFruit.position.x < min)
-            RandomFruit.position.x = min;
-        else if (RandomFruit.position.x > max)
-            RandomFruit.position.x = max;
-
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !RandomFruit.disabled) {
-            spawn_fruit(RandomFruit.position, RandomFruit.type);
-            RandomFruit.disabled = true;
-        }
-
-        handle_collisions();
-
-        detect_fruits_on_endline();
-
-        BeginDrawing();
-        ClearBackground(GRAY);
-
-        if (!RandomFruit.disabled)
-            DrawCircleV(RandomFruit.position, random_fruit_data.radius, random_fruit_data.color);
-
-        DrawRectangle(START_X, 120, END_X-START_X, 5, RED);             // end line
-        DrawRectangle(START_X, 20, 5, 755, BLACK);                      // wall 1
-        DrawRectangle(END_X-5, 20, 5, 755, BLACK);                      // wall 2
-        DrawRectangle(START_X, 755+START_X, END_X-START_X, 5, BLACK);   // ground
-
-        for (Fruit &f : fruits) {
-            f.draw();
-        }
-
-        EndDrawing();
     }
 
     b2DestroyWorld(world_id);

@@ -88,7 +88,7 @@ void handle_collisions() {
             to_destroy.push_back(b2Shape_GetBody(hit.shapeIdA));
             to_destroy.push_back(b2Shape_GetBody(hit.shapeIdB));
             if (body_a.type != Watermelon)
-                to_create.push_back({b2Body_GetPosition(b2Shape_GetBody(hit.shapeIdA)), body_a.type});
+                to_create.push_back({b2Body_GetPosition(b2Shape_GetBody(hit.shapeIdB)), body_a.type});
         }
     }
 
@@ -104,7 +104,8 @@ void handle_collisions() {
     to_destroy.clear();
 
     for (new_fruit &f : to_create) {
-        spawn_fruit({f.position.x, f.position.y}, fruit_db[f.old_type].next);
+        FruitTemplate data = fruit_db[f.old_type];
+        spawn_fruit({f.position.x, f.position.y-data.radius/2.0f}, data.next);
     }
     to_create.clear();
 }

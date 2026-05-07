@@ -2,7 +2,6 @@
 #include <box2d/box2d.h>
 #include <box2d/id.h>
 #include <box2d/math_functions.h>
-#include <cstdio>
 #include <raylib.h>
 #include <vector>
 
@@ -31,15 +30,18 @@ void detect_fruits_on_endline() {
             continue;
         }
 
-        f.time += GetFrameTime();
         b2Vec2 position = b2Body_GetPosition(f.body_id);
         if (!CheckCollisionCircleRec({position.x, position.y}, f.radius, line)) {
             to_delete.push_back(f.body_id.index1);
             continue;
         }
 
+        f.time += GetFrameTime();
         if (f.time >= 5.5f) {
-            printf("end\n");
+            //printf("end\n");
+            end = true;
+            fruits_on_line.clear();
+            break;
         }
     }
 
@@ -52,4 +54,12 @@ void detect_fruits_on_endline() {
             }
         }
     }
+}
+
+void restart_game() {
+    for (Fruit &f : fruits) {
+        b2DestroyBody(f.body_id);
+    }
+    fruits.clear();
+    end = false;
 }
