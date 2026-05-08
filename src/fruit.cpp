@@ -39,13 +39,19 @@ void spawn_fruit(Vector2 position, FruitType type) {
     b2BodyDef body_def = b2DefaultBodyDef();
     body_def.type = b2_dynamicBody;
     body_def.position = {position.x, position.y};
+    /*body_def.linearDamping = 0.0f;
+    body_def.angularDamping = 0.0f;*/
     b2BodyId body_id = b2CreateBody(world_id, &body_def);
     b2Circle circle = {{0, 0}, (float)fruit_db[type].radius};
     b2ShapeDef shape_def = b2DefaultShapeDef();
     shape_def.enableHitEvents = true;
     shape_def.enableContactEvents = true;
+    shape_def.material.friction = 0.3f;
+    /*shape_def.material.restitution = 0.3f;
+    shape_def.density = 0.5f;*/
     b2CreateCircleShape(body_id, &shape_def, &circle);
 
+    b2Body_ApplyLinearImpulse(body_id, {(float)GetRandomValue(-2, 2), (float)GetRandomValue(-2, 2)}, b2Body_GetPosition(body_id), true);
     fruits.push_back({type, body_id});
 }
 
@@ -105,7 +111,7 @@ void handle_collisions() {
 
     for (new_fruit &f : to_create) {
         FruitTemplate data = fruit_db[f.old_type];
-        spawn_fruit({f.position.x, f.position.y-data.radius/2.0f}, data.next);
+        spawn_fruit({f.position.x, f.position.y-data.radius}, data.next);
     }
     to_create.clear();
 }
